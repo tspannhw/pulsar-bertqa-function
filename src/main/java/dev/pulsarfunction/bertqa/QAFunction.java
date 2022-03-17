@@ -161,6 +161,8 @@ public class QAFunction implements Function<byte[], Void> {
                 // add prediction to the results
                 chat.setPrediction(prediction);
 
+                System.out.println("Pred:" + prediction);
+
                 context.newOutputMessage(outputTopic, JSONSchema.of(Chat.class))
                 .key(UUID.randomUUID().toString())
                 .property("language", "Java")
