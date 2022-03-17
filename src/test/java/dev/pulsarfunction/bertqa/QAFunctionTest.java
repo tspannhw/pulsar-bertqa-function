@@ -74,7 +74,6 @@ public class QAFunctionTest {
             localRunner.start(true);
 
 //            localRunner.start(false);
-
 //            Thread.sleep(30000);
 //            localRunner.stop();
 //            System.exit(0);

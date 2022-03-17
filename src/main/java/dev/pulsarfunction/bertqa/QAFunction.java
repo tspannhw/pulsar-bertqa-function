@@ -25,6 +25,8 @@ import java.util.UUID;
  **/
 public class QAFunction implements Function<byte[], Void> {
 
+    private static final String STATIC_PULSAR_TEXT = "Pulsar is a multi-tenant, high-performance solution for server-to-server messaging. Pulsar was originally developed by Yahoo, it is under the stewardship of the Apache Software Foundation.Native support for multiple clusters in a Pulsar instance, with seamless geo-replication of messages across clusters.Very low publish and end-to-end latency.Seamless scalability to over a million topics.A simple client API with bindings for Java, Go, Python and C++.Multiple subscription modes (exclusive, shared, and failover) for topics.Guaranteed message delivery with persistent message storage provided by Apache BookKeeper.A serverless light-weight computing framework Pulsar Functions offers the capability for stream-native data processing.A serverless connector framework Pulsar IO, which is built on Pulsar Functions, makes it easier to move data in and out of Apache Pulsar. Tiered Storage offloads data from hot/warm storage to cold/lon gterm storage (such as S3 and GCS) when the data is aging out.";
+
     /**
      * parse Chat JSON Message into Class
      *
@@ -111,7 +113,9 @@ public class QAFunction implements Function<byte[], Void> {
                     Runtime.getRuntime().totalMemory());
         }
 
+        // @TODO:  Fix.  maybe pass in
         String outputTopic = "persistent://public/default/bertqaresults";
+
         try {
             Chat chat = parseMessage(new String(input));
 
@@ -123,21 +127,21 @@ public class QAFunction implements Function<byte[], Void> {
 
                 // @TODO:   Fix.  maybe pass in or reference an online database or REST?
                 try {
-                    paragraph = convertInputStream(QAFunction.class.getClassLoader().getResourceAsStream("apachepulsar.txt"));
+                  //  paragraph = convertInputStream(QAFunction.class.getClassLoader().getResourceAsStream("apachepulsar.txt"));
+                    paragraph = STATIC_PULSAR_TEXT;
                 }
                 catch(Throwable t) {
                     t.printStackTrace();
                     paragraph = "Apache Pulsar is awesome";
                 }
 
-//                DownloadUtils.download("https://djl-ai.s3.amazonaws.com/mlrepo/model/nlp/question_answer/ai/djl/mxnet/bertqa/vocab.json", "/mxnet/bertqa/vocab.json", new ProgressBar());
-
                 QAInput qainput = new QAInput(chat.getComment(), paragraph);
 
                 if (context.getLogger() != null && context.getLogger().isDebugEnabled()) {
                      context.getLogger().debug("Question: {}", qainput.getQuestion());
+                     context.getLogger().debug("Engine: {}", Engine.getDefaultEngineName());
                 }
-                System.out.println(Engine.getDefaultEngineName());
+
                 Criteria<QAInput, String> criteria =
                         Criteria.builder()
                        .optApplication(Application.NLP.QUESTION_ANSWER)
@@ -147,23 +151,20 @@ public class QAFunction implements Function<byte[], Void> {
                         .optProgress(new ProgressBar())
                         .build();
 
-                /**
-                 * optApplication(Application.NLP.QUESTION_ANSWER)
-                 *                         .setTypes(QAInput.class, String.class)
-                 *                         .optEngine("MXNet").optFilter("backbone", "bert")
-                 *                         .build();
-                 */
                 String prediction = "";
                 try (ZooModel<QAInput, String> model = criteria.loadModel()) {
                     try (Predictor<QAInput, String> predictor = model.newPredictor()) {
                         prediction = predictor.predict(qainput);
                     }
                 }
+
+                // add prediction to the results
                 chat.setPrediction(prediction);
 
                 context.newOutputMessage(outputTopic, JSONSchema.of(Chat.class))
                 .key(UUID.randomUUID().toString())
                 .property("language", "Java")
+                .property("processor", "bertqa")
                 .value(chat)
                 .send();
             }
