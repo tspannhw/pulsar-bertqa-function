@@ -6,9 +6,7 @@ import org.apache.pulsar.functions.api.Context;
 import org.junit.Test;
 
 import java.util.Collections;
-
 import static org.mockito.Mockito.mock;
-
 
 import dev.pulsarfunction.bertqa.QAFunction;
 import dev.pulsarfunction.bertqa.Chat;
@@ -52,6 +50,13 @@ public class QAFunctionTest {
             QAFunction func = new QAFunction();
             func.process(JSON_STRING.getBytes(), mock(Context.class));
         }
+
+    @Test
+    public void testFunctionDeep() {
+        QAFunction func = new QAFunction();
+
+        func.process(JSON_STRING.getBytes(), ctx);
+    }
 
         /**
          * @param args   string arguments

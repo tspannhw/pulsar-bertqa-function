@@ -89,11 +89,11 @@ public class QAFunction implements Function<byte[], Void> {
      */
     @Override
     public Void process(byte[] input, Context context) {
-        if (input == null || context == null) {
+        if (input == null ) {
             return null;
         }
 
-        if (context.getLogger() != null && context.getLogger().isDebugEnabled()) {
+        if (context != null && context.getLogger() != null && context.getLogger().isDebugEnabled()) {
             context.getLogger().debug("LOG:" + input.toString());
 
             System.setProperty("org.slf4j.simpleLogger.logFile", "System.out");
@@ -124,7 +124,7 @@ public class QAFunction implements Function<byte[], Void> {
             Chat chat = parseMessage(new String(input));
 
             if (chat != null) {
-                if (context.getLogger() != null && context.getLogger().isDebugEnabled()) {
+                if (context != null && context.getLogger() != null && context.getLogger().isDebugEnabled()) {
                     context.getLogger().debug("Receive message JSON:" + chat);
                 }
                 String paragraph = null;
@@ -141,9 +141,15 @@ public class QAFunction implements Function<byte[], Void> {
 
                 QAInput qainput = new QAInput(chat.getComment(), paragraph);
 
-                if (context.getLogger() != null && context.getLogger().isDebugEnabled()) {
+                if (context != null && context.getLogger() != null && context.getLogger().isDebugEnabled()) {
                      context.getLogger().debug("Question: {}", qainput.getQuestion());
                      context.getLogger().debug("Engine: {}", Engine.getDefaultEngineName());
+                }
+                else {
+                    System.out.println("chat:" + chat.toString());
+                    System.out.println("q:" + qainput.getQuestion());
+                    System.out.println("e:" + Engine.getDefaultEngineName());
+                    System.out.println("p:" + paragraph);
                 }
 
                 Criteria<QAInput, String> criteria =
@@ -167,16 +173,24 @@ public class QAFunction implements Function<byte[], Void> {
 
                 System.out.println("Pred:" + prediction);
 
-                context.newOutputMessage(outputTopic, JSONSchema.of(Chat.class))
-                .key(UUID.randomUUID().toString())
-                .property("language", "Java")
-                .property("processor", "bertqa")
-                .value(chat)
-                .send();
+                if ( context != null  ) {
+                    context.newOutputMessage(outputTopic, JSONSchema.of(Chat.class))
+                            .key(UUID.randomUUID().toString())
+                            .property("language", "Java")
+                            .property("processor", "bertqa")
+                            .value(chat)
+                            .send();
+                }
+                else {
+                    System.out.println("Null context, assuming local test run. " + chat.toString());
+                }
             }
         } catch (Throwable e) {
-            if (context.getLogger() != null) {
+            if (context != null  && context.getLogger() != null) {
                 context.getLogger().error("ERROR:" + e.getLocalizedMessage());
+            }
+            else {
+                e.printStackTrace();
             }
         }
         return null;
