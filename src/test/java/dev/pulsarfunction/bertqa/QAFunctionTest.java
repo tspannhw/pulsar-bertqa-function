@@ -33,7 +33,7 @@ public class QAFunctionTest {
             this.ctx = ctx;
         }
 
-        public static String JSON_STRING = "{\"userInfo\":\"Tim Spann\",\"contactInfo\":\"Tim Spann, Developer Advocate @ StreamNative\",\"comment\":\"What is Apache Bookeeper?\"}";
+        public static String JSON_STRING = "{\"userInfo\":\"Tim Spann\",\"contactInfo\":\"Tim Spann, Developer Advocate @ StreamNative\",\"comment\":\"What is Apache Pulsar?\"}";
         /**
          *
          * @param msg
@@ -50,13 +50,6 @@ public class QAFunctionTest {
             QAFunction func = new QAFunction();
             func.process(JSON_STRING.getBytes(), mock(Context.class));
         }
-
-    @Test
-    public void testFunctionDeep() {
-        QAFunction func = new QAFunction();
-
-        func.process(JSON_STRING.getBytes(), ctx);
-    }
 
         /**
          * @param args   string arguments

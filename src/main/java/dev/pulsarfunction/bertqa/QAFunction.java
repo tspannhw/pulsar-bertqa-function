@@ -1,13 +1,17 @@
 package dev.pulsarfunction.bertqa;
 
 import ai.djl.Application;
+import ai.djl.Device;
+import ai.djl.ModelException;
 import ai.djl.engine.Engine;
 import ai.djl.inference.Predictor;
+import ai.djl.modality.Classifications;
 import ai.djl.modality.nlp.qa.QAInput;
 import ai.djl.repository.zoo.Criteria;
 import ai.djl.repository.zoo.ZooModel;
 import ai.djl.training.util.DownloadUtils;
 import ai.djl.training.util.ProgressBar;
+import ai.djl.translate.TranslateException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.pulsar.client.impl.schema.JSONSchema;
 import org.apache.pulsar.common.functions.FunctionConfig;
@@ -29,7 +33,7 @@ import java.util.UUID;
  **/
 public class QAFunction implements Function<byte[], Void> {
 
-    private static final String STATIC_PULSAR_TEXT = "Pulsar is a multi-tenant, high-performance solution for server-to-server messaging. Pulsar was originally developed by Yahoo, it is under the stewardship of the Apache Software Foundation.Native support for multiple clusters in a Pulsar instance, with seamless geo-replication of messages across clusters.Very low publish and end-to-end latency.Seamless scalability to over a million topics.A simple client API with bindings for Java, Go, Python and C++.Multiple subscription modes (exclusive, shared, and failover) for topics.Guaranteed message delivery with persistent message storage provided by Apache BookKeeper.A serverless light-weight computing framework Pulsar Functions offers the capability for stream-native data processing.A serverless connector framework Pulsar IO, which is built on Pulsar Functions, makes it easier to move data in and out of Apache Pulsar. Tiered Storage offloads data from hot/warm storage to cold/lon gterm storage (such as S3 and GCS) when the data is aging out.";
+    private static final String STATIC_PULSAR_TEXT = "Apache Pulsar is a multi-tenant, high-performance solution for server-to-server messaging. Apache Pulsar was originally developed by Yahoo, it is under the stewardship of the Apache Software Foundation.Native support for multiple clusters in a Pulsar instance, with seamless geo-replication of messages across clusters.Very low publish and end-to-end latency.Seamless scalability to over a million topics.A simple client API with bindings for Java, Go, Python and C++.Multiple subscription modes (exclusive, shared, and failover) for topics.Guaranteed message delivery with persistent message storage provided by Apache BookKeeper.A serverless light-weight computing framework Pulsar Functions offers the capability for stream-native data processing.A serverless connector framework Pulsar IO, which is built on Pulsar Functions, makes it easier to move data in and out of Apache Pulsar.";
 
     /**
      * parse Chat JSON Message into Class
@@ -80,6 +84,8 @@ public class QAFunction implements Function<byte[], Void> {
         }
         return outBuffer.toString();
     }
+
+
 
     /**
      * PROCESS
@@ -166,14 +172,19 @@ public class QAFunction implements Function<byte[], Void> {
                     try (Predictor<QAInput, String> predictor = model.newPredictor()) {
                         prediction = predictor.predict(qainput);
                     }
+                } catch(Throwable e) {
+                    if (context != null  && context.getLogger() != null) {
+                        context.getLogger().error("ERROR:" + e.getLocalizedMessage());
+                    }
+                    else {
+                        e.printStackTrace();
+                    }
                 }
 
                 // add prediction to the results
                 chat.setPrediction(prediction);
 
-                System.out.println("Pred:" + prediction);
-
-                if ( context != null  ) {
+                if ( context != null && context.getTenant() != null ) {
                     context.newOutputMessage(outputTopic, JSONSchema.of(Chat.class))
                             .key(UUID.randomUUID().toString())
                             .property("language", "Java")
@@ -182,6 +193,7 @@ public class QAFunction implements Function<byte[], Void> {
                             .send();
                 }
                 else {
+                    System.out.println("Pred:" + prediction);
                     System.out.println("Null context, assuming local test run. " + chat.toString());
                 }
             }
