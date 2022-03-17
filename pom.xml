@@ -71,22 +71,16 @@
             <artifactId>mxnet-engine</artifactId>
             <scope>runtime</scope>
         </dependency>
-        <!-- Pytorch -->
-        <dependency>
-            <groupId>ai.djl.pytorch</groupId>
-            <artifactId>pytorch-engine</artifactId>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>ai.djl.pytorch</groupId>
-            <artifactId>pytorch-native-auto</artifactId>
-            <version>1.9.1</version>
-        </dependency>
-        <dependency>
-            <groupId>ai.djl.pytorch</groupId>
-            <artifactId>pytorch-model-zoo</artifactId>
-        </dependency>
+
         <!-- Pulsar -->
+
+
+        <dependency>
+            <groupId>org.apache.pulsar</groupId>
+            <artifactId>pulsar-functions-local-runner-original</artifactId>
+            <version>${pulsar.version}</version>
+            <scope>compile</scope>
+        </dependency>
 
         <dependency>
             <groupId>org.apache.pulsar</groupId>
@@ -105,6 +99,16 @@
             <artifactId>pulsar-functions-local-runner-original</artifactId>
             <version>${pulsar.version}</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.pulsar</groupId>
+            <artifactId>pulsar-client</artifactId>
+            <version>${pulsar.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.pulsar</groupId>
+            <artifactId>pulsar-client-admin</artifactId>
+            <version>${pulsar.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.pulsar</groupId>

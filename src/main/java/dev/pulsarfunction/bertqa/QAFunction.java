@@ -1,31 +1,22 @@
 package dev.pulsarfunction.bertqa;
 
 import ai.djl.Application;
-import ai.djl.Device;
-import ai.djl.ModelException;
 import ai.djl.engine.Engine;
 import ai.djl.inference.Predictor;
-import ai.djl.modality.Classifications;
 import ai.djl.modality.nlp.qa.QAInput;
 import ai.djl.repository.zoo.Criteria;
 import ai.djl.repository.zoo.ZooModel;
-import ai.djl.training.util.DownloadUtils;
 import ai.djl.training.util.ProgressBar;
-import ai.djl.translate.TranslateException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.pulsar.client.impl.schema.JSONSchema;
-import org.apache.pulsar.common.functions.FunctionConfig;
 import org.apache.pulsar.functions.api.Context;
 import org.apache.pulsar.functions.api.Function;
-import org.apache.pulsar.common.functions.FunctionConfig;
-import org.apache.pulsar.functions.*;
-import org.apache.pulsar.functions.api.Context;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
 import java.util.UUID;
 
 /**
@@ -84,8 +75,6 @@ public class QAFunction implements Function<byte[], Void> {
         }
         return outBuffer.toString();
     }
-
-
 
     /**
      * PROCESS
@@ -151,7 +140,7 @@ public class QAFunction implements Function<byte[], Void> {
                      context.getLogger().debug("Question: {}", qainput.getQuestion());
                      context.getLogger().debug("Engine: {}", Engine.getDefaultEngineName());
                 }
-                else {
+                else if ( context == null ) {
                     System.out.println("chat:" + chat.toString());
                     System.out.println("q:" + qainput.getQuestion());
                     System.out.println("e:" + Engine.getDefaultEngineName());
