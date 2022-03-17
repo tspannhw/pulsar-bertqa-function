@@ -71,10 +71,12 @@ public class QAFunctionTest {
                     .functionConfig(functionConfig)
                     .build();
 
-            localRunner.start(false);
+            localRunner.start(true);
 
-            Thread.sleep(30000);
-            localRunner.stop();
-            System.exit(0);
+//            localRunner.start(false);
+
+//            Thread.sleep(30000);
+//            localRunner.stop();
+//            System.exit(0);
         }
     }

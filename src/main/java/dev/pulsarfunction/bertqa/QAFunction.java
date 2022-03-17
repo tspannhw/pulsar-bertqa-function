@@ -138,17 +138,22 @@ public class QAFunction implements Function<byte[], Void> {
                      context.getLogger().debug("Question: {}", qainput.getQuestion());
                 }
                 System.out.println(Engine.getDefaultEngineName());
-                System.out.println(Engine.getAllEngines().toString());
-
                 Criteria<QAInput, String> criteria =
-                        Criteria.builder().optApplication(Application.NLP.QUESTION_ANSWER)
+                        Criteria.builder()
+                       .optApplication(Application.NLP.QUESTION_ANSWER)
                         .setTypes(QAInput.class, String.class)
-                        .optEngine("MXNet")
+                        .optFilter("backbone", "bert")
+                        .optEngine(Engine.getDefaultEngineName())
+                        .optProgress(new ProgressBar())
                         .build();
+
+                /**
+                 * optApplication(Application.NLP.QUESTION_ANSWER)
+                 *                         .setTypes(QAInput.class, String.class)
+                 *                         .optEngine("MXNet").optFilter("backbone", "bert")
+                 *                         .build();
+                 */
                 String prediction = "";
-//                        .optFilter("backbone", "bert")
-//                       .optProgress(new ProgressBar())
-//  
                 try (ZooModel<QAInput, String> model = criteria.loadModel()) {
                     try (Predictor<QAInput, String> predictor = model.newPredictor()) {
                         prediction = predictor.predict(qainput);
