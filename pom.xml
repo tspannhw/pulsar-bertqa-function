@@ -71,6 +71,12 @@
             <artifactId>mxnet-engine</artifactId>
             <scope>runtime</scope>
         </dependency>
+<!-- https://mvnrepository.com/artifact/ai.djl.mxnet/mxnet-native-auto -->
+<dependency>
+    <groupId>ai.djl.mxnet</groupId>
+    <artifactId>mxnet-native-auto</artifactId>
+    <version>1.8.0</version>
+</dependency>
 
         <!-- Pulsar -->
 
@@ -79,7 +85,6 @@
             <groupId>org.apache.pulsar</groupId>
             <artifactId>pulsar-functions-local-runner-original</artifactId>
             <version>${pulsar.version}</version>
-            <scope>compile</scope>
         </dependency>
 
         <dependency>
@@ -94,12 +99,6 @@
             <version>${pulsar.version}</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.apache.pulsar</groupId>
-            <artifactId>pulsar-functions-local-runner-original</artifactId>
-            <version>${pulsar.version}</version>
-            <scope>test</scope>
-        </dependency>
         <dependency>
             <groupId>org.apache.pulsar</groupId>
             <artifactId>pulsar-client</artifactId>
