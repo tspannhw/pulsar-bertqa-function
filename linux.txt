@@ -1,0 +1,6 @@
+<dependency>
+    <groupId>ai.djl.mxnet</groupId>
+    <artifactId>mxnet-native-mkl</artifactId>
+    <classifier>linux-x86_64</classifier>
+    <version>1.8.0</version>
+</dependency>
